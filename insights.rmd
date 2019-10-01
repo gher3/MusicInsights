@@ -41,3 +41,10 @@ Person <- tibble(time_submitted = survey$time_submitted, pseudonym_generator = s
 Song <- tibble(pseudonym = survey$pseudonym, favorite_song_artist = survey$favorite_song_artist, favorite_song = survey$favorite_song, favorite_song_link = survey$favorite_song_link)
 ```
 
+Change time to POSIX local time (POSIXlt)
+
+```{r}
+library('reader')
+
+Person$time_submitted <- as.POSIXlt(parse_datetime(Person$time_submitted, format = "%m/%d/%y %H:%M"))
+```
