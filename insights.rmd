@@ -1,13 +1,15 @@
 ---
 title: "Music Insights"
 author: "Gary Her"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 First, we need tidyverse to handle data importing and wrangling...
 
 ```{r}
-install.packages('tidyverse')
+#install.packages('tidyverse'), uncomment if need to install tidyverse first
 library('tidyverse')
 
 survey <- read_csv("https://raw.githubusercontent.com/introdsci/MusicSurvey/master/music-survey.csv")
@@ -30,7 +32,7 @@ colnames(survey)[colnames(survey)=="Song"] <- "favorite_song"
 colnames(survey)[colnames(survey)=="Link to song (on Youtube or Vimeo)"] <- "favorite_song_link"
 ```
 
-Make code "tidy". Loading libraries to help (dplyr and tidyr):
+Make survey table "tidy". Loading libraries to help (dplyr and tidyr):
 
 ```{r}
 library('dplyr')
@@ -41,10 +43,35 @@ Person <- tibble(time_submitted = survey$time_submitted, pseudonym_generator = s
 Song <- tibble(pseudonym = survey$pseudonym, favorite_song_artist = survey$favorite_song_artist, favorite_song = survey$favorite_song, favorite_song_link = survey$favorite_song_link)
 ```
 
-Change time to POSIX local time (POSIXlt)
+Change time to POSIX local time (POSIXlt):
 
 ```{r}
 library('reader')
 
 Person$time_submitted <- as.POSIXlt(parse_datetime(Person$time_submitted, format = "%m/%d/%y %H:%M"))
+```
+
+Change categorical variable(s) to factors in Person tibble:
+
+```{r}
+Person$pseudonym_generator <- as.factor(Person$pseudonym_generator)
+Person$sex <- as.factor(Person$sex)
+Person$academic_level <- as.factor(Person$academic_level)
+Person$academic_major <- as.factor(Person$academic_major)
+#levels(Person$academic_major)[levels(Person$academic_major)=="Computer information systems"] <- "Computer Information Systems"
+#uncomment to check if 'Computer information systems' changed to 'Computer Information Systems'
+```
+
+Make preference table "tidy":
+
+```{r}
+preferences <- gather(preferences, key = "artist_song", value = "rating", 3:45)
+Rating <- tibble(pseudonym = preferences$`What was your pseudonym?`, artist_song = preferences$artist_song, 
+                 rating = preferences$rating)
+```
+
+Change categorical variable(s) to factors in Rating tibble:
+
+```{r}
+Rating$rating <- as.factor(Rating$rating)
 ```
